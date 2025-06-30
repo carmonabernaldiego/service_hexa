@@ -1,26 +1,26 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DomainModule } from 'src/domain/domain.module';
-import ProductRepositoryMongo from '../infrastructure/adapters/respository/products/product.repository.mongo';
-import ProductSchema from '../infrastructure/adapters/respository/products/schema/product.schema';
-import ProductFactory from './factory/product.factory';
-import { PRODUCTS_USECASES } from './usecases/products';
+import UserRepositoryMongo from '../infrastructure/adapters/respository/users/user.repository.mongo';
+import UserSchema from '../infrastructure/adapters/respository/users/schema/user.schema';
+import UserFactory from './factory/user.factory';
+import { USERS_USECASES } from './usecases/users';
 
 @Module({
   imports: [
     DomainModule,
     MongooseModule.forFeature([
       {
-        name: 'Product',
-        schema: ProductSchema,
+        name: 'User',
+        schema: UserSchema,
       },
     ]),
   ],
   providers: [
-    ProductFactory,
-    ...PRODUCTS_USECASES,
-    { provide: 'ProductRepository', useClass: ProductRepositoryMongo },
+    UserFactory,
+    ...USERS_USECASES,
+    { provide: 'UserRepository', useClass: UserRepositoryMongo },
   ],
-  exports: [ProductFactory, ...PRODUCTS_USECASES],
+  exports: [UserFactory, ...USERS_USECASES],
 })
 export class ApplicationModule {}

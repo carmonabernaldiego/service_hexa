@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
-import PriceProductLessZeroException from 'src/domain/exceptions/price-product-less-zero.exception';
+import PriceProductLessZeroException from 'src/domain/exceptions/user-domain.exception';
 
 @Catch()
 export default class HttpExceptionFilter implements ExceptionFilter<Error> {

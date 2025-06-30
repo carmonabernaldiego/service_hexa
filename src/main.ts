@@ -15,8 +15,8 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
-  app.use('/api/healthz', (req, res) => {
-    const message = 'healthz OK';
+  app.use('/api/health', (req, res) => {
+    const message = 'Funciona OK';
     logger.log(message);
     res.send(message);
   });

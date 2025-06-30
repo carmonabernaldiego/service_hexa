@@ -73,6 +73,10 @@ export default class User {
     return this.email;
   }
 
+  public getCurp(): string {
+    return this.curp;
+  }
+
   public setCreateAt(date: Date): this {
     this.createAt = date;
     return this;

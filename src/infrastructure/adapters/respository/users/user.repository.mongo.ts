@@ -37,7 +37,13 @@ export default class UserRepositoryMongo implements UserRepository {
   }
 
   public async delete(curp: string): Promise<Optional<User>> {
-    const deleted = await this.userModel.findOneAndDelete({ curp }).exec();
+    const deleted = await this.userModel
+      .findOneAndUpdate(
+        { curp, active: true },
+        { active: false },
+        { new: true },
+      )
+      .exec();
     return UserMapper.toDomain(deleted);
   }
 }

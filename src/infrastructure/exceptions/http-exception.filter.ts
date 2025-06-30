@@ -1,6 +1,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
-import PriceProductLessZeroException from 'src/domain/exceptions/user-domain.exception';
+import DuplicatedUserException from 'src/domain/exceptions/duplicated-user.exception';
+import UserDomainException from 'src/domain/exceptions/user-domain.exception';
 
 @Catch()
 export default class HttpExceptionFilter implements ExceptionFilter<Error> {
@@ -20,12 +21,14 @@ export default class HttpExceptionFilter implements ExceptionFilter<Error> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public isBusinessException(exception: Error): any {
-    if (exception instanceof PriceProductLessZeroException) {
-      return {
-        message: exception.message,
-        status: 400,
-      };
+    if (exception instanceof UserDomainException) {
+      return { message: exception.message, status: 400 };
     }
+
+    if (exception instanceof DuplicatedUserException) {
+      return { message: exception.message, status: 409 };
+    }
+
     Logger.log(exception.stack);
     return {
       message: 'unknown',

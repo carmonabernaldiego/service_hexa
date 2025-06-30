@@ -49,19 +49,112 @@ export default class User {
   }
 
   private validate(): void {
+    this.validateEmail();
+    this.validatePassword();
+    this.validateNames();
+    this.validateCurp();
+  }
+
+  private validateEmail(): void {
     if (!this.email || !this.email.includes('@')) {
       throw new UserDomainException('Email inválido');
     }
+  }
+
+  private validatePassword(): void {
     if (!this.password || this.password.length < 8) {
       throw new UserDomainException(
         'La contraseña debe tener al menos 8 caracteres',
       );
     }
+  }
+
+  private validateNames(): void {
     if (!this.nombre || !this.apellidoPaterno || !this.apellidoMaterno) {
       throw new UserDomainException('Nombre y apellidos son obligatorios');
     }
-    if (!this.curp || this.curp.length !== 18) {
-      throw new UserDomainException('CURP inválida');
+  }
+
+  private validateCurp(): void {
+    const curp = this.curp.toUpperCase();
+
+    // Formato básico y homoclave
+    const regex =
+      /^[A-Z][AEIOU][A-Z]{2}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HM](AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS)([B-DF-HJ-NP-TV-Z]{3})([A-Z\d])(\d)$/;
+    if (!regex.test(curp)) {
+      throw new UserDomainException('CURP con formato inválido');
+    }
+
+    // Palabras ofensivas no permitidas
+    const blacklist = new Set([
+      'BUEI',
+      'BUEY',
+      'CACA',
+      'CACO',
+      'CAGA',
+      'CAGO',
+      'CAKA',
+      'COGE',
+      'COGI',
+      'COJA',
+      'COJE',
+      'COJI',
+      'COJO',
+      'CULO',
+      'FETO',
+      'GUEI',
+      'GUEY',
+      'JOTO',
+      'KACA',
+      'KACO',
+      'KAGA',
+      'KAGO',
+      'KOGE',
+      'KOGI',
+      'KOJA',
+      'KOJE',
+      'KOJI',
+      'KOJO',
+      'KULO',
+      'MAME',
+      'MAMO',
+      'MEAR',
+      'MEAS',
+      'MEON',
+      'MIAR',
+      'MION',
+      'MOCO',
+      'MULA',
+      'PEDA',
+      'PEDO',
+      'PENE',
+      'PIPI',
+      'PITO',
+      'POPO',
+      'PUTA',
+      'PUTO',
+      'QULO',
+      'RUIN',
+    ]);
+    const prefix = curp.substring(0, 4);
+    if (blacklist.has(prefix)) {
+      throw new UserDomainException(
+        `CURP inválida, contiene palabra prohibida (“${prefix}”)`,
+      );
+    }
+
+    // Cálculo del dígito verificador
+    const diccionario = '0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
+    let suma = 0;
+    for (let i = 0; i < 17; i++) {
+      const valor = diccionario.indexOf(curp.charAt(i));
+      suma += valor * (18 - i);
+    }
+    const resto = suma % 10;
+    const digitoCalculado = resto === 0 ? '0' : `${10 - resto}`;
+    const digitoReal = curp.charAt(17);
+    if (digitoCalculado !== digitoReal) {
+      throw new UserDomainException('CURP con dígito verificador incorrecto');
     }
   }
 

@@ -6,6 +6,8 @@ import { UserEntity } from './entity/user.entity';
 import { Optional } from 'typescript-optional';
 import UserMapper from '../../../mapper/user.mapper';
 import { UserRepository } from '../../../../domain/ports/user.repository';
+import DuplicatedUserException from 'src/domain/exceptions/duplicated-user.exception';
+import { MongoServerError } from 'mongodb';
 
 @Injectable()
 export default class UserRepositoryMongo implements UserRepository {
@@ -24,9 +26,26 @@ export default class UserRepositoryMongo implements UserRepository {
   }
 
   public async create(user: User): Promise<Optional<User>> {
-    const created = new this.userModel(user);
-    const result = await created.save();
-    return UserMapper.toDomain(result);
+    try {
+      const created = new this.userModel(user);
+      const result = await created.save();
+      return UserMapper.toDomain(result);
+    } catch (error) {
+      if (error instanceof MongoServerError && error.code === 11000) {
+        if (error.message.includes('curp')) {
+          throw new DuplicatedUserException(
+            'Ya existe un usuario con este CURP',
+          );
+        } else if (error.message.includes('email')) {
+          throw new DuplicatedUserException(
+            'Ya existe un usuario con este email',
+          );
+        } else {
+          throw new DuplicatedUserException('Duplicado en otro campo único');
+        }
+      }
+      throw error;
+    }
   }
 
   public async update(curp: string, user: User): Promise<Optional<User>> {

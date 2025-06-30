@@ -16,7 +16,7 @@ export default class UserFactory {
       userCommand.password,
       userCommand.twoFactorAuthSecret,
       userCommand.isTwoFactorEnable ?? false,
-      userCommand.role ?? 'client',
+      userCommand.role ?? 'user',
       userCommand.active ?? true,
       userCommand.passwordResetCode ?? null,
     );

@@ -27,7 +27,7 @@ export default class User {
     password: string,
     twoFactorAuthSecret?: string,
     isTwoFactorEnable: boolean = false,
-    role: string = 'client',
+    role: string = 'user',
     active: boolean = true,
     passwordResetCode?: string,
   ) {

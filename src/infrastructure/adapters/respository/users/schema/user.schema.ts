@@ -10,7 +10,7 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   twoFactorAuthSecret: { type: String },
   isTwoFactorEnable: { type: Boolean, default: false },
-  role: { type: String, enum: ['client', 'admin'], default: 'client' },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
   active: { type: Boolean, default: true },
   passwordResetCode: { type: String, default: null },
   createAt: { type: Date, default: Date.now },

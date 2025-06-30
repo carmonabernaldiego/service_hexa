@@ -18,8 +18,8 @@ export default class UserRepositoryMongo implements UserRepository {
     return UserMapper.toDomains(users);
   }
 
-  public async findByEmail(email: string): Promise<Optional<User>> {
-    const user = await this.userModel.findOne({ email }).exec();
+  public async findByCurp(curp: string): Promise<Optional<User>> {
+    const user = await this.userModel.findOne({ curp }).exec();
     return UserMapper.toDomain(user);
   }
 
@@ -29,15 +29,15 @@ export default class UserRepositoryMongo implements UserRepository {
     return UserMapper.toDomain(result);
   }
 
-  public async update(email: string, user: User): Promise<Optional<User>> {
+  public async update(curp: string, user: User): Promise<Optional<User>> {
     const updated = await this.userModel
-      .findOneAndUpdate({ email }, user, { new: true })
+      .findOneAndUpdate({ curp }, user, { new: true })
       .exec();
     return UserMapper.toDomain(updated);
   }
 
-  public async delete(email: string): Promise<Optional<User>> {
-    const deleted = await this.userModel.findOneAndDelete({ email }).exec();
+  public async delete(curp: string): Promise<Optional<User>> {
+    const deleted = await this.userModel.findOneAndDelete({ curp }).exec();
     return UserMapper.toDomain(deleted);
   }
 }

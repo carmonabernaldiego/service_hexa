@@ -32,9 +32,9 @@ export default class UserController {
     return res.status(HttpStatus.OK).json(users);
   }
 
-  @Get(':email')
-  async findOne(@Param('email') email: string, @Res() res): Promise<any> {
-    const user = await this.getUser.handler(email);
+  @Get(':curp')
+  async findOne(@Param('curp') curp: string, @Res() res): Promise<any> {
+    const user = await this.getUser.handler(curp);
     return res.status(HttpStatus.OK).json(user);
   }
 
@@ -44,19 +44,19 @@ export default class UserController {
     return res.status(HttpStatus.CREATED).json(result);
   }
 
-  @Put(':email')
+  @Put(':curp')
   async update(
-    @Param('email') email: string,
+    @Param('curp') curp: string,
     @Body() cmd: UserCommand,
     @Res() res,
   ): Promise<any> {
-    const result = await this.updateUser.handler(email, cmd);
+    const result = await this.updateUser.handler(curp, cmd);
     return res.status(HttpStatus.OK).json(result);
   }
 
-  @Delete(':email')
-  async delete(@Param('email') email: string, @Res() res): Promise<any> {
-    const result = await this.deleteUser.handler(email);
+  @Delete(':curp')
+  async delete(@Param('curp') curp: string, @Res() res): Promise<any> {
+    const result = await this.deleteUser.handler(curp);
     return res.status(HttpStatus.OK).json(result);
   }
 }

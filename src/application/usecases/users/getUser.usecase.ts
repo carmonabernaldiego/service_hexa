@@ -9,7 +9,7 @@ export default class GetUserUseCase {
     @Inject('UserRepository') private userRepository: UserRepository,
   ) {}
 
-  public handler(email: string): Promise<Optional<User>> {
-    return this.userRepository.findByEmail(email);
+  public handler(curp: string): Promise<Optional<User>> {
+    return this.userRepository.findByCurp(curp);
   }
 }

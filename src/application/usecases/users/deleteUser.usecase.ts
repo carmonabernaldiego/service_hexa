@@ -9,7 +9,7 @@ export default class DeleteUserUseCase {
     @Inject('UserRepository') private userRepository: UserRepository,
   ) {}
 
-  public handler(email: string): Promise<Optional<User>> {
-    return this.userRepository.delete(email);
+  public handler(curp: string): Promise<Optional<User>> {
+    return this.userRepository.delete(curp);
   }
 }

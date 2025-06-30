@@ -52,9 +52,9 @@ export default class User {
     if (!this.email || !this.email.includes('@')) {
       throw new UserDomainException('Email inválido');
     }
-    if (!this.password || this.password.length < 6) {
+    if (!this.password || this.password.length < 8) {
       throw new UserDomainException(
-        'La contraseña debe tener al menos 6 caracteres',
+        'La contraseña debe tener al menos 8 caracteres',
       );
     }
     if (!this.nombre || !this.apellidoPaterno || !this.apellidoMaterno) {

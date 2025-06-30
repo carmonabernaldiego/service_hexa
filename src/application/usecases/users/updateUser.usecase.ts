@@ -13,10 +13,10 @@ export default class UpdateUserUseCase {
   ) {}
 
   public handler(
-    email: string,
+    curp: string,
     userCommand: UserCommand,
   ): Promise<Optional<User>> {
     const user = this.userFactory.createUser(userCommand);
-    return this.userRepository.update(email, user);
+    return this.userRepository.update(curp, user);
   }
 }

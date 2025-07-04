@@ -12,8 +12,8 @@ export default class CreateUserUseCase {
     private userFactory: UserFactory,
   ) {}
 
-  public handler(userCommand: UserCommand): Promise<Optional<User>> {
-    const user = this.userFactory.createUser(userCommand);
+  public async handler(userCommand: UserCommand): Promise<Optional<User>> {
+    const user = await this.userFactory.createUser(userCommand); // <-agrega `await`
     return this.userRepository.create(user);
   }
 }

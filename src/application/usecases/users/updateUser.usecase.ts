@@ -12,11 +12,11 @@ export default class UpdateUserUseCase {
     private userFactory: UserFactory,
   ) {}
 
-  public handler(
+  public async handler(
     curp: string,
     userCommand: UserCommand,
   ): Promise<Optional<User>> {
-    const user = this.userFactory.createUser(userCommand);
+    const user = await this.userFactory.createUser(userCommand); //<-usar await
     return this.userRepository.update(curp, user);
   }
 }

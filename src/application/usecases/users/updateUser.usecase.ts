@@ -16,7 +16,7 @@ export default class UpdateUserUseCase {
     curp: string,
     userCommand: UserCommand,
   ): Promise<Optional<User>> {
-    const user = await this.userFactory.createUser(userCommand); //<-usar await
+    const user = await this.userFactory.createUser(userCommand); //<-usar await cBDX
     return this.userRepository.update(curp, user);
   }
 }

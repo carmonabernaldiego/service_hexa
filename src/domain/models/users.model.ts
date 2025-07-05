@@ -166,6 +166,12 @@ export default class User {
     return this.email;
   }
 
+  public getNombre(): string {
+    return (
+      this.nombre + ' ' + this.apellidoPaterno + ' ' + this.apellidoMaterno
+    );
+  }
+
   public getCurp(): string {
     return this.curp;
   }

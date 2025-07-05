@@ -43,7 +43,11 @@ export class UserEntity {
   @Column({ type: 'boolean', default: false, name: 'is_two_factor_enable' })
   isTwoFactorEnable: boolean;
 
-  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
+  @Column({
+    type: 'enum',
+    enum: ['user', 'admin', 'medico', 'farmacia'],
+    default: 'user',
+  })
   role: string;
 
   @Column({ type: 'boolean', default: true })

@@ -19,6 +19,6 @@ import { RabbitMQModule } from '../infrastructure/providers/rabbitmq.module';
     ...USERS_USECASES,
     { provide: 'UserRepository', useClass: UserRepositoryMySQL },
   ],
-  exports: [UserFactory, ...USERS_USECASES, RabbitMQModule],
+  exports: [UserFactory, ...USERS_USECASES],
 })
 export class ApplicationModule {}

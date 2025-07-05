@@ -21,7 +21,6 @@ export class NotificationService {
 
   async sendNotification(payload: NotificationPayload): Promise<void> {
     try {
-      await this.client.connect();
       this.client.emit('send_notification', payload);
       this.logger.log(`Notification sent to ${payload.email}`);
     } catch (error) {

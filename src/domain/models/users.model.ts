@@ -176,6 +176,15 @@ export default class User {
     return this.curp;
   }
 
+  public getImagen(): string | undefined {
+    return this.imagen;
+  }
+
+  public setImagen(url: string): this {
+    (this as any).imagen = url;
+    return this;
+  }
+
   public setCreateAt(date: Date): this {
     this.createAt = date;
     return this;

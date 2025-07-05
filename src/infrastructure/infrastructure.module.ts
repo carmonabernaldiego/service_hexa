@@ -5,6 +5,7 @@ import { Configuration } from '../config/env.enum';
 import { ApplicationModule } from '../application/application.module';
 import { UserEntity } from './adapters/respository/users/entity/user.entity';
 import UserController from './controllers/user.controller';
+import { StorageService } from './providers/storage.service';
 
 @Module({
   imports: [
@@ -33,5 +34,7 @@ import UserController from './controllers/user.controller';
     TypeOrmModule.forFeature([UserEntity]),
   ],
   controllers: [UserController],
+  providers: [StorageService],
+  exports: [StorageService],
 })
 export class InfrastructureModule {}

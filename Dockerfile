@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Expone el puerto (de tu .env PORT)
-EXPOSE 8000
+EXPOSE 3000
 
 # Inicia la app
 CMD ["node", "dist/main.js"]

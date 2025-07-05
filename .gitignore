@@ -39,3 +39,4 @@ lerna-debug.log*
 environments/local.env
 
 users-service.pem
+instrucciones-docker.txt

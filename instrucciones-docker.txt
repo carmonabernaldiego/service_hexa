@@ -1,0 +1,124 @@
+# Instalar Docker en una instancia EC2 con Ubuntu 24.04
+
+## Pasos para instalar Docker en Ubuntu 24.04 en AWS EC2
+
+1. **Conectar a tu instancia EC2**
+   ```bash
+   ssh -i "tu-llave.pem" ubuntu@tu-instancia-ec2
+   ```
+
+2. **Actualizar los paquetes del sistema**
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+
+3. **Instalar dependencias necesarias**
+   ```bash
+   sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+   ```
+
+4. **Agregar la clave GPG oficial de Docker**
+   ```bash
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+   ```
+
+5. **Agregar el repositorio de Docker**
+   ```bash
+   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+   ```
+
+6. **Actualizar nuevamente los paquetes**
+   ```bash
+   sudo apt update
+   ```
+
+7. **Instalar Docker Engine**
+   ```bash
+   sudo apt install -y docker-ce docker-ce-cli containerd.io
+   ```
+
+8. **Verificar que Docker esté funcionando**
+   ```bash
+   sudo systemctl status docker
+   ```
+
+9. **Agregar tu usuario al grupo docker (opcional pero recomendado)**
+   ```bash
+   sudo usermod -aG docker $USER
+   newgrp docker  # Para aplicar los cambios sin necesidad de cerrar sesión
+   ```
+
+10. **Verificar la instalación**
+    ```bash
+    docker --version
+    docker run hello-world
+    ```
+
+## Configuración adicional recomendada
+
+1. **Habilitar Docker para que inicie con el sistema**
+   ```bash
+   sudo systemctl enable docker
+   ```
+
+2. **Instalar Docker Compose (si lo necesitas)**
+   ```bash
+   sudo apt install -y docker-compose-plugin
+   ```
+
+3. **Verificar Docker Compose**
+   ```bash
+   docker compose version
+   ```
+
+
+## ✅ Paso 1: Crear el archivo `.env` (si aún no lo tienes)
+
+En el mismo directorio donde tienes el `Dockerfile`, crea tu archivo `.env`:
+
+```env
+NODE_ENV=development
+NODE_NAME=users-ms
+PORT=8000
+MONGO_CONNECTION_STRING=mongodb+srv://<usuario>:<pass>@cluster0.mongodb.net/DB?retryWrites=true&w=majority
+```
+
+> ⚠️ Asegúrate de que `PORT` coincida con el que usas en el código y con el `EXPOSE 8000`.
+
+---
+
+## ✅ Paso 2: Construir la imagen
+
+Desde la terminal (ya sea local o dentro de EC2):
+
+```bash
+docker build -t users-ms .
+```
+
+---
+
+## ✅ Paso 3: Ejecutar el contenedor con reinicio automático
+
+```bash
+docker run -d \
+  --name users-ms \
+  --restart unless-stopped \
+  -p 8000:8000 \
+  --env-file .env \
+  users-ms
+```
+
+---
+
+## ✅ Paso 4: Verificar que esté corriendo
+
+```bash
+docker ps
+```
+
+Deberías ver algo como:
+
+```
+CONTAINER ID   IMAGE       COMMAND                PORTS                    NAMES
+abc123456789   users-ms    "node dist/main.js"    0.0.0.0:8000->8000/tcp   users-ms
+```

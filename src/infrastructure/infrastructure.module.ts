@@ -1,23 +1,33 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Configuration } from '../config/env.enum';
 import { ApplicationModule } from '../application/application.module';
-import UserSchema from './adapters/respository/users/schema/user.schema';
+import { UserEntity } from './adapters/respository/users/entity/user.entity';
 import UserController from './controllers/user.controller';
 
 @Module({
   imports: [
     ApplicationModule,
     ConfigModule,
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (cfg: ConfigService) => ({
-        uri: cfg.get<string>(Configuration.MONGO_CONNECTION_STRING),
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>(Configuration.MYSQL_HOST),
+        port: configService.get<number>(Configuration.MYSQL_PORT),
+        username: configService.get<string>(Configuration.MYSQL_USERNAME),
+        password: configService.get<string>(Configuration.MYSQL_PASSWORD),
+        database: configService.get<string>(Configuration.MYSQL_DATABASE),
+        entities: [UserEntity],
+        synchronize: process.env.NODE_ENV !== 'production', // Solo en desarrollo
+        logging: process.env.NODE_ENV === 'development',
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
       }),
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    TypeOrmModule.forFeature([UserEntity]),
   ],
   controllers: [UserController],
 })

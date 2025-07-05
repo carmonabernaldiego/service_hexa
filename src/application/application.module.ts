@@ -1,25 +1,17 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { DomainModule } from 'src/domain/domain.module';
-import UserRepositoryMongo from '../infrastructure/adapters/respository/users/user.repository.mongo';
-import UserSchema from '../infrastructure/adapters/respository/users/schema/user.schema';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DomainModule } from '../domain/domain.module';
+import { UserEntity } from '../infrastructure/adapters/respository/users/entity/user.entity';
+import UserRepositoryMySQL from '../infrastructure/adapters/respository/users/user.repository.mysql';
 import UserFactory from './factory/user.factory';
 import { USERS_USECASES } from './usecases/users';
 
 @Module({
-  imports: [
-    DomainModule,
-    MongooseModule.forFeature([
-      {
-        name: 'User',
-        schema: UserSchema,
-      },
-    ]),
-  ],
+  imports: [DomainModule, TypeOrmModule.forFeature([UserEntity])],
   providers: [
     UserFactory,
     ...USERS_USECASES,
-    { provide: 'UserRepository', useClass: UserRepositoryMongo },
+    { provide: 'UserRepository', useClass: UserRepositoryMySQL },
   ],
   exports: [UserFactory, ...USERS_USECASES],
 })

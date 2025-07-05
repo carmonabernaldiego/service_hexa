@@ -7,6 +7,7 @@ export default class UserMapper {
     if (!entity) {
       return Optional.empty<User>();
     }
+
     const user = new User(
       entity.id,
       entity.nombre,
@@ -22,6 +23,7 @@ export default class UserMapper {
       entity.active,
       entity.passwordResetCode,
     );
+
     user.setCreateAt(entity.createAt);
     return Optional.of(user);
   }

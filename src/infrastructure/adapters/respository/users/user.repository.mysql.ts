@@ -53,7 +53,6 @@ export default class UserRepositoryMySQL implements UserRepository {
       }
 
       const userEntity = this.userRepository.create({
-        id: user.getId(),
         nombre: user['nombre'],
         apellidoPaterno: user['apellidoPaterno'],
         apellidoMaterno: user['apellidoMaterno'],

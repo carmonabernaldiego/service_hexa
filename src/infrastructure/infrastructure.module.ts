@@ -25,6 +25,9 @@ import UserController from './controllers/user.controller';
         logging: process.env.NODE_ENV === 'development',
         charset: 'utf8mb4',
         collation: 'utf8mb4_unicode_ci',
+        extra: {
+          family: 4,
+        },
       }),
     }),
     TypeOrmModule.forFeature([UserEntity]),

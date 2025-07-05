@@ -69,7 +69,7 @@ export class NotificationService {
     const payload: NotificationPayload = {
       type: 'custom-notification',
       email,
-      subject: 'custom-notification',
+      subject: 'Cuenta eliminada',
       message: `Hola ${nombre}, tu cuenta ha sido eliminada de nuestro sistema.`,
       preHeader: 'Cuenta eliminada',
       footerText: 'Este es un correo automático. No respondas.',

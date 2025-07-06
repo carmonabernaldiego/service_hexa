@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:10
+    container_name: kongadb
+    restart: always
+    environment:
+      POSTGRES_USER: konga
+      POSTGRES_PASSWORD: konga
+      POSTGRES_DB: konga
+    ports:
+      - "5432:5432"
+    volumes:
+      - konga-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U konga"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  konga:
+    image: pantsel/konga
+    container_name: konga
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "1337:1337"
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: konga
+      DB_PASSWORD: konga
+      DB_DATABASE: konga
+      NODE_ENV: development
+      TOKEN_SECRET: supertokensecreto
+
+volumes:
+  konga-postgres-data:
+

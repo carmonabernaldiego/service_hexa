@@ -1,10 +1,11 @@
 pipeline {
   agent {
-    label 'users-ec2' // Sin espacio al final
+    label 'users-ec2'
   }
 
   environment {
     IMAGE_NAME = "users-ms"
+    ENV_FILE = credentials('users-ms-env')  // Referencia al Secret File subido
   }
 
   stages {
@@ -42,7 +43,7 @@ pipeline {
               --name $IMAGE_NAME \
               --restart unless-stopped \
               -p 3000:3000 \
-              --env-file .env \
+              --env-file $ENV_FILE \  // Usa la variable de la credencial
               $IMAGE_NAME
           '''
         }

@@ -36,7 +36,7 @@ export class NotificationService {
     const payload: NotificationPayload = {
       type: 'custom-notification',
       email,
-      subject: 'Cuenta creada con éxito',
+      subject: 'Cuenta creada con éxito.',
       message: `Hola ${nombre}, tu cuenta ha sido registrada correctamente.`,
       preHeader: '¡Bienvenido a la plataforma!',
       footerText: 'Este es un correo automático. No respondas.',

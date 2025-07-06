@@ -19,7 +19,7 @@ export default class UserFactory {
       hashedPassword, //<-usa el password encriptado
       userCommand.twoFactorAuthSecret,
       userCommand.isTwoFactorEnable ?? false,
-      userCommand.role ?? 'user',
+      userCommand.role ?? 'paciente',
       userCommand.active ?? true,
       userCommand.passwordResetCode ?? null,
     );

@@ -5,13 +5,13 @@ pipeline {
 
     environment {
         IMAGE_NAME = "users-ms"
-        ENV_FILE = credentials('users-ms-env')  // Ruta temporal del env.txt subido
+        ENV_FILE = credentials('users-ms-env')  // Credencial del archivo env.txt
     }
 
     stages {
         stage('Checkout SCM') {
             steps {
-                checkout scm  // Clona el repositorio en el workspace
+                checkout scm  // Clona el repositorio desde GitHub
             }
         }
 
@@ -42,19 +42,17 @@ pipeline {
         stage('Ejecutar contenedor') {
             steps {
                 script {
-                    // Detener y eliminar el contenedor antiguo
+                    // 1. Detener y eliminar el contenedor antiguo si existe
                     sh 'docker stop $IMAGE_NAME || true'
                     sh 'docker rm $IMAGE_NAME || true'
                     
-                    // Ejecutar el nuevo contenedor con el env.txt
-                    sh """
-                        docker run -d \
-                          --name $IMAGE_NAME \
-                          --restart unless-stopped \
-                          -p 3000:3000 \
-                          --env-file "$ENV_FILE" \  // Usa la ruta del env.txt de Jenkins
-                          $IMAGE_NAME
-                    """
+                    // 2. Ejecutar el nuevo contenedor con el env.txt
+                    sh """docker run -d \\
+                          --name $IMAGE_NAME \\
+                          --restart unless-stopped \\
+                          -p 3000:3000 \\
+                          --env-file "$ENV_FILE" \\
+                          $IMAGE_NAME"""
                 }
             }
         }

@@ -17,7 +17,7 @@ pipeline {
 
         stage('Instalación de dependencias') {
             steps {
-                dir('service_hexa') {
+                dir('service_users') {
                     sh 'npm install'
                 }
             }
@@ -25,7 +25,7 @@ pipeline {
 
         stage('Compilar proyecto') {
             steps {
-                dir('service_hexa') {
+                dir('service_users') {
                     sh 'npm run build'
                 }
             }
@@ -33,7 +33,7 @@ pipeline {
 
         stage('Construir imagen Docker') {
             steps {
-                dir('service_hexa') {
+                dir('service_users') {
                     sh 'docker build -t $IMAGE_NAME .'
                 }
             }

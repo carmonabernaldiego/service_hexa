@@ -33,9 +33,8 @@ pipeline {
 
         stage('Construir imagen Docker') {
             steps {
-                dir('service_users') {
-                    sh 'docker build -t $IMAGE_NAME .'
-                }
+                // Eliminamos el dir() porque el Dockerfile está en la raíz
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 

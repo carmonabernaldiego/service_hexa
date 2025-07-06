@@ -5,10 +5,16 @@ pipeline {
 
     environment {
         IMAGE_NAME = "users-ms"
-        ENV_FILE = credentials('users-ms-env')  // Credencial subida
+        ENV_FILE = credentials('users-ms-env')  // Ruta temporal del env.txt subido
     }
 
     stages {
+        stage('Checkout SCM') {
+            steps {
+                checkout scm  // Clona el repositorio en el workspace
+            }
+        }
+
         stage('Instalación de dependencias') {
             steps {
                 dir('service_hexa') {
@@ -35,17 +41,20 @@ pipeline {
 
         stage('Ejecutar contenedor') {
             steps {
-                dir('service_hexa') {
-                    sh '''
-                        docker stop $IMAGE_NAME || true
-                        docker rm $IMAGE_NAME || true
+                script {
+                    // Detener y eliminar el contenedor antiguo
+                    sh 'docker stop $IMAGE_NAME || true'
+                    sh 'docker rm $IMAGE_NAME || true'
+                    
+                    // Ejecutar el nuevo contenedor con el env.txt
+                    sh """
                         docker run -d \
                           --name $IMAGE_NAME \
                           --restart unless-stopped \
                           -p 3000:3000 \
-                          --env-file "$ENV_FILE" \
+                          --env-file "$ENV_FILE" \  // Usa la ruta del env.txt de Jenkins
                           $IMAGE_NAME
-                    '''
+                    """
                 }
             }
         }

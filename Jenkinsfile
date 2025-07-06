@@ -1,40 +1,38 @@
 pipeline {
-  agent any
+  agent {
+    label 'users-ec2 ' // Usa aquí el nombre exacto del nodo EC2 conectado
+  }
+
+  environment {
+    IMAGE_NAME = "users-ms"
+  }
 
   stages {
-    stage('Clonar y Compilar') {
+    stage('Instalación de dependencias') {
       steps {
         sh 'npm install'
+      }
+    }
+
+    stage('Compilar proyecto') {
+      steps {
         sh 'npm run build'
       }
     }
 
-    stage('Empaquetar Docker') {
+    stage('Construir imagen Docker') {
       steps {
-        sh '''
-          docker build -t users-ms .
-          docker save users-ms | gzip > users-ms.tar.gz
-        '''
+        sh 'docker build -t $IMAGE_NAME .'
       }
     }
 
-    stage('Desplegar en EC2 Remota') {
+    stage('Ejecutar contenedor') {
       steps {
-        // Invoca la credencial SSH guardada en Jenkins
-        sshagent(['ec2-users-key']) {
-          // Copiar el tar.gz a la instancia remota
-          sh 'scp -o StrictHostKeyChecking=no users-ms.tar.gz ubuntu@18.220.22.105:/home/ubuntu/'
-
-          // Ejecutar en remoto los comandos Docker
-          sh '''
-            ssh -o StrictHostKeyChecking=no ubuntu@18.220.22.105 << 'EOF'
-              docker stop users-ms || true
-              docker rm users-ms   || true
-              gunzip -c users-ms.tar.gz | docker load
-              docker run -d -p 3000:3000 --name users-ms users-ms
-            EOF
-          '''
-        }
+        sh '''
+          docker stop $IMAGE_NAME || true
+          docker rm $IMAGE_NAME || true
+          docker run -d --name $IMAGE_NAME --restart unless-stopped -p 3000:3000 --env-file .env $IMAGE_NAME
+        '''
       }
     }
   }

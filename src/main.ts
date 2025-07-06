@@ -23,6 +23,7 @@ async function bootstrap() {
     const message = 'Funciona OK';
     logger.log(message);
     res.send(message);
+    console.log('deploy tessprueba nuevat');
   });
 
   app.useGlobalFilters(new HttpExceptionFilter());

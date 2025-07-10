@@ -11,4 +11,7 @@ export const configVar = () => ({
   // RabbitMQ configuration
   RABBITMQ_URL: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
   RABBITMQ_QUEUE: process.env.RABBITMQ_QUEUE || 'notifications_queue',
+  // JWT configuration
+  JWT_SECRET: process.env.JWT_SECRET || 'secret-key',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
 });

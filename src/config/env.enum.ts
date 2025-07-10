@@ -11,4 +11,7 @@ export enum Configuration {
   // RabbitMQ configuration
   RABBITMQ_URL = 'RABBITMQ_URL',
   RABBITMQ_QUEUE = 'RABBITMQ_QUEUE',
+  // JWT configuration
+  JWT_SECRET = 'JWT_SECRET',
+  JWT_EXPIRES_IN = 'JWT_EXPIRES_IN',
 }

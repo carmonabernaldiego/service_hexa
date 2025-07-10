@@ -1,4 +1,3 @@
-// src/application/application.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DomainModule } from '../domain/domain.module';
@@ -19,6 +18,6 @@ import { RabbitMQModule } from '../infrastructure/providers/rabbitmq.module';
     ...USERS_USECASES,
     { provide: 'UserRepository', useClass: UserRepositoryMySQL },
   ],
-  exports: [UserFactory, ...USERS_USECASES],
+  exports: [UserFactory, ...USERS_USECASES, 'UserRepository'],
 })
 export class ApplicationModule {}

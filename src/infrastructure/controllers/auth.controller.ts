@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  HttpStatus,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import LoginCommand from '../../application/commands/login.command';
@@ -12,7 +19,10 @@ export default class AuthController {
   ) {}
 
   @Post('login')
-  async login(@Body() loginCommand: LoginCommand, @Res() res: Response) {
+  async login(
+    @Body(new ValidationPipe({ transform: true })) loginCommand: LoginCommand,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.loginUseCase.handler(loginCommand);
 

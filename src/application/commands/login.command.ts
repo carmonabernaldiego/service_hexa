@@ -1,4 +1,12 @@
+import { Transform } from 'class-transformer';
+import { IsEmail, IsString } from 'class-validator';
+
 export default class LoginCommand {
-  public email: string;
-  public password: string;
+  @IsEmail()
+  @Transform(({ value }) => value.trim().toLowerCase())
+  public email!: string;
+
+  @IsString()
+  @Transform(({ value }) => value.trim())
+  public password!: string;
 }

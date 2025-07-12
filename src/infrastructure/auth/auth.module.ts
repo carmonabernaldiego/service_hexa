@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Configuration } from '../../config/env.enum';
 import { JwtStrategy } from './jwt.strategy';
 import { ApplicationModule } from '../../application/application.module';
+import AuthController from '../controllers/auth.controller';
 import { LOGIN_USECASES } from '../../application/usecases/auth';
 
 @Module({
@@ -22,6 +23,7 @@ import { LOGIN_USECASES } from '../../application/usecases/auth';
       }),
     }),
   ],
+  controllers: [AuthController],
   providers: [JwtStrategy, ...LOGIN_USECASES],
   exports: [JwtModule, ...LOGIN_USECASES],
 })

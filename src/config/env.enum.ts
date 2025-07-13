@@ -14,4 +14,7 @@ export enum Configuration {
   // JWT configuration
   JWT_SECRET = 'JWT_SECRET',
   JWT_EXPIRES_IN = 'JWT_EXPIRES_IN',
+
+  // Two-Factor Authentication configuration
+  TWO_FACTOR_AUTH_APP_NAME = 'TWO_FACTOR_AUTH_APP_NAME',
 }

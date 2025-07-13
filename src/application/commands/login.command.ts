@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, IsOptional } from 'class-validator';
 
 export default class LoginCommand {
   @IsEmail()
@@ -9,4 +9,8 @@ export default class LoginCommand {
   @IsString()
   @Transform(({ value }) => value.trim())
   public password!: string;
+
+  @IsOptional()
+  @IsString()
+  public twoFactorCode?: string;
 }

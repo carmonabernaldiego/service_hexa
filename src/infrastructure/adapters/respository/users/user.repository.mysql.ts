@@ -30,6 +30,13 @@ export default class UserRepositoryMySQL implements UserRepository {
     return UserMapper.toDomain(user);
   }
 
+  async findById(id: string): Promise<Optional<User>> {
+    const user = await this.userRepository.findOne({
+      where: { id, active: true },
+    });
+    return UserMapper.toDomain(user);
+  }
+
   public async findByEmail(email: string): Promise<Optional<User>> {
     const user = await this.userRepository.findOne({
       where: { email, active: true },

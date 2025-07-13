@@ -86,7 +86,7 @@ export class NotificationService {
       type: 'custom-notification',
       email,
       subject: 'Restablecimiento de contraseña',
-      message: `Hola ${nombre}, tu código de verificación es: ${code}`,
+      message: `Hola ${nombre}, tu código de verificación es: <b style="color: red;">${code}</b>. Por favor, úsalo para restablecer tu contraseña.`,
       preHeader: 'Código de verificación',
       footerText: 'Este es un correo automático. No respondas.',
     };

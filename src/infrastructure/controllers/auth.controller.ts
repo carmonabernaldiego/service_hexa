@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import LoginCommand from '../../application/commands/login.command';
 import LoginUseCase from '../../application/usecases/auth/login.usecase';
 import { TwoFactorAuthProvider } from '../../domain/ports/two-factor-auth.provider';

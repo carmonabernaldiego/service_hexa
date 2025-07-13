@@ -16,6 +16,14 @@ export default class User {
   private passwordResetCode?: string;
   private createAt: Date;
 
+  // NUEVOS CAMPOS
+  private rfc?: string;
+  private fechaNacimiento?: string;
+  private cedulaProfesional?: string;
+  private telefono?: string;
+  private permisosPrescripcion?: any;
+  private declaracionTerminos?: any;
+
   constructor(
     id: string,
     nombre: string,
@@ -30,6 +38,12 @@ export default class User {
     role: string = 'paciente',
     active: boolean = true,
     passwordResetCode?: string,
+    rfc?: string,
+    fechaNacimiento?: string,
+    cedulaProfesional?: string,
+    telefono?: string,
+    permisosPrescripcion?: any,
+    declaracionTerminos?: any,
   ) {
     this.id = id;
     this.nombre = nombre;
@@ -45,6 +59,15 @@ export default class User {
     this.active = active;
     this.passwordResetCode = passwordResetCode;
     this.createAt = new Date();
+
+    // Nuevos campos
+    this.rfc = rfc;
+    this.fechaNacimiento = fechaNacimiento;
+    this.cedulaProfesional = cedulaProfesional;
+    this.telefono = telefono;
+    this.permisosPrescripcion = permisosPrescripcion;
+    this.declaracionTerminos = declaracionTerminos;
+
     this.validate();
   }
 
@@ -77,15 +100,12 @@ export default class User {
 
   private validateCurp(): void {
     const curp = this.curp.toUpperCase();
-
-    // Formato básico y homoclave
     const regex =
       /^[A-Z][AEIOU][A-Z]{2}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HM](AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS)([B-DF-HJ-NP-TV-Z]{3})([A-Z\d])(\d)$/;
     if (!regex.test(curp)) {
       throw new UserDomainException('CURP con formato inválido');
     }
 
-    // Palabras ofensivas no permitidas
     const blacklist = new Set([
       'BUEI',
       'BUEY',
@@ -188,5 +208,25 @@ export default class User {
   public setCreateAt(date: Date): this {
     this.createAt = date;
     return this;
+  }
+
+  // NUEVOS GETTERS
+  public getRfc(): string | undefined {
+    return this.rfc;
+  }
+  public getFechaNacimiento(): string | undefined {
+    return this.fechaNacimiento;
+  }
+  public getCedulaProfesional(): string | undefined {
+    return this.cedulaProfesional;
+  }
+  public getTelefono(): string | undefined {
+    return this.telefono;
+  }
+  public getPermisosPrescripcion(): any {
+    return this.permisosPrescripcion;
+  }
+  public getDeclaracionTerminos(): any {
+    return this.declaracionTerminos;
   }
 }

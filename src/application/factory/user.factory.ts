@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt'; // 👈 importa bcrypt
+import * as bcrypt from 'bcrypt';
 import User from '../../domain/models/users.model';
 import UserCommand from '../commands/user.command';
 
 @Injectable()
 export default class UserFactory {
   public async createUser(userCommand: UserCommand): Promise<User> {
-    const hashedPassword = await bcrypt.hash(userCommand.password, 10); //<-encripta la contraseña
+    const hashedPassword = await bcrypt.hash(userCommand.password, 10);
 
     return new User(
       '',
@@ -16,12 +16,19 @@ export default class UserFactory {
       userCommand.curp,
       userCommand.imagen,
       userCommand.email,
-      hashedPassword, //<-usa el password encriptado
+      hashedPassword,
       userCommand.twoFactorAuthSecret,
       userCommand.isTwoFactorEnable ?? false,
       userCommand.role ?? 'paciente',
       userCommand.active ?? true,
       userCommand.passwordResetCode ?? null,
+      // NUEVOS CAMPOS
+      userCommand.rfc,
+      userCommand.fechaNacimiento,
+      userCommand.cedulaProfesional,
+      userCommand.telefono,
+      userCommand.permisosPrescripcion,
+      userCommand.declaracionTerminos,
     );
   }
 }

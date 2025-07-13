@@ -5,6 +5,8 @@ import {
   IsOptional,
   IsBoolean,
   IsEnum,
+  IsDateString,
+  IsObject,
 } from 'class-validator';
 
 export default class UserCommand {
@@ -55,4 +57,50 @@ export default class UserCommand {
   @IsOptional()
   @IsString()
   public passwordResetCode?: string;
+
+  // NUEVOS CAMPOS OPCIONALES
+
+  @IsOptional()
+  @IsString()
+  public rfc?: string;
+
+  @IsOptional()
+  @IsDateString() // formato ISO desde el frontend, ej. "1995-01-30"
+  public fechaNacimiento?: string;
+
+  @IsOptional()
+  @IsString()
+  public cedulaProfesional?: string;
+
+  @IsOptional()
+  @IsString()
+  public telefono?: string;
+
+  @IsOptional()
+  @IsObject()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return undefined;
+      }
+    }
+    return value;
+  })
+  public permisosPrescripcion?: any;
+
+  @IsOptional()
+  @IsObject()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return undefined;
+      }
+    }
+    return value;
+  })
+  public declaracionTerminos?: any;
 }

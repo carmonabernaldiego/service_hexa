@@ -64,7 +64,7 @@ export default class UserRepositoryMySQL implements UserRepository {
         apellidoPaterno: user['apellidoPaterno'],
         apellidoMaterno: user['apellidoMaterno'],
         curp: user.getCurp(),
-        imagen: user['imagen'],
+        imagen: user.getImagen(),
         email: user.getEmail(),
         password: user['password'],
         twoFactorAuthSecret: user['twoFactorAuthSecret'],
@@ -73,6 +73,13 @@ export default class UserRepositoryMySQL implements UserRepository {
         active: user['active'],
         passwordResetCode: user['passwordResetCode'],
         createAt: user['createAt'],
+        // Nuevos campos
+        rfc: user.getRfc(),
+        fechaNacimiento: user.getFechaNacimiento(),
+        cedulaProfesional: user.getCedulaProfesional(),
+        telefono: user.getTelefono(),
+        permisosPrescripcion: user.getPermisosPrescripcion(),
+        declaracionTerminos: user.getDeclaracionTerminos(),
       });
 
       const savedUser = await this.userRepository.save(userEntity);
@@ -108,12 +115,11 @@ export default class UserRepositoryMySQL implements UserRepository {
       return Optional.empty<User>();
     }
 
-    // Actualizar solo los campos que han cambiado
     const updateData = {
       nombre: user['nombre'],
       apellidoPaterno: user['apellidoPaterno'],
       apellidoMaterno: user['apellidoMaterno'],
-      imagen: user['imagen'],
+      imagen: user.getImagen(),
       email: user.getEmail(),
       password: user['password'],
       twoFactorAuthSecret: user['twoFactorAuthSecret'],
@@ -121,6 +127,13 @@ export default class UserRepositoryMySQL implements UserRepository {
       role: user['role'],
       active: user['active'],
       passwordResetCode: user['passwordResetCode'],
+      // Nuevos campos
+      rfc: user.getRfc(),
+      fechaNacimiento: user.getFechaNacimiento(),
+      cedulaProfesional: user.getCedulaProfesional(),
+      telefono: user.getTelefono(),
+      permisosPrescripcion: user.getPermisosPrescripcion(),
+      declaracionTerminos: user.getDeclaracionTerminos(),
     };
 
     await this.userRepository.update({ curp }, updateData);

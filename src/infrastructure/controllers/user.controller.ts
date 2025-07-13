@@ -33,7 +33,6 @@ export default class UserController {
     private readonly storageService: StorageService,
   ) {}
 
-  // CREAR USUARIO (con imagen)
   @Post()
   @UseInterceptors(FileInterceptor('imagen'))
   async create(
@@ -42,16 +41,23 @@ export default class UserController {
     cmd: UserCommand,
     @Res() res: Response,
   ) {
-    if (file) {
-      cmd.imagen = await this.storageService.uploadFile(file);
-    } else {
-      cmd.imagen = null;
+    try {
+      if (file) {
+        cmd.imagen = await this.storageService.uploadFile(file);
+      } else {
+        cmd.imagen = null;
+      }
+      const result = await this.createUser.handler(cmd);
+      return res.status(HttpStatus.CREATED).json(result);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Error creating user',
+        error: error.message,
+      });
     }
-    const result = await this.createUser.handler(cmd);
-    return res.status(HttpStatus.CREATED).json(result);
   }
 
-  // EDITAR USUARIO (con imagen)
   @Put(':curp')
   @UseInterceptors(FileInterceptor('imagen'))
   async update(
@@ -61,27 +67,42 @@ export default class UserController {
     cmd: UserCommand,
     @Res() res: Response,
   ) {
-    if (file) {
-      cmd.imagen = await this.storageService.uploadFile(file);
+    try {
+      if (file) {
+        cmd.imagen = await this.storageService.uploadFile(file);
+      }
+      const result = await this.updateUser.handler(curp, cmd);
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Error updating user',
+        error: error.message,
+      });
     }
-    const result = await this.updateUser.handler(curp, cmd);
-    return res.status(HttpStatus.OK).json(result);
   }
 
-  // OBTENER TODOS LOS USUARIOS (con url firmada)
   @Get()
   async findAll(@Res() res: Response): Promise<any> {
-    const users = await this.getAllUsers.handler();
-    await Promise.all(
-      users.map(async (user) => {
-        if (user.getImagen()) {
-          user.setImagen(
-            await this.storageService.getSignedUrl(user.getImagen()),
-          );
-        }
-      }),
-    );
-    return res.status(HttpStatus.OK).json(users);
+    try {
+      const users = await this.getAllUsers.handler();
+      await Promise.all(
+        users.map(async (user) => {
+          if (user.getImagen()) {
+            user.setImagen(
+              await this.storageService.getSignedUrl(user.getImagen()),
+            );
+          }
+        }),
+      );
+      return res.status(HttpStatus.OK).json(users);
+    } catch (error) {
+      console.error('Error getting users:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Error getting users',
+        error: error.message,
+      });
+    }
   }
 
   @Get(':curp')
@@ -89,21 +110,38 @@ export default class UserController {
     @Param('curp') curp: string,
     @Res() res: Response,
   ): Promise<any> {
-    const optionalUser = await this.getUser.handler(curp);
-    const user = optionalUser.orElse(undefined);
-    if (user && user.getImagen()) {
-      user.setImagen(await this.storageService.getSignedUrl(user.getImagen()));
+    try {
+      const optionalUser = await this.getUser.handler(curp);
+      const user = optionalUser.orElse(undefined);
+      if (user && user.getImagen()) {
+        user.setImagen(
+          await this.storageService.getSignedUrl(user.getImagen()),
+        );
+      }
+      return res.status(HttpStatus.OK).json(user);
+    } catch (error) {
+      console.error('Error getting user:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Error getting user',
+        error: error.message,
+      });
     }
-    return res.status(HttpStatus.OK).json(user);
   }
 
-  // ELIMINAR USUARIO
   @Delete(':curp')
   async delete(
     @Param('curp') curp: string,
     @Res() res: Response,
   ): Promise<any> {
-    const result = await this.deleteUser.handler(curp);
-    return res.status(HttpStatus.OK).json(result);
+    try {
+      const result = await this.deleteUser.handler(curp);
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Error deleting user',
+        error: error.message,
+      });
+    }
   }
 }

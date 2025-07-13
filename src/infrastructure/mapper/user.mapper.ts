@@ -28,6 +28,7 @@ export default class UserMapper {
         : undefined,
       entity.cedulaProfesional,
       entity.telefono,
+      entity.domicilio,
       entity.permisosPrescripcion,
       entity.declaracionTerminos,
     );

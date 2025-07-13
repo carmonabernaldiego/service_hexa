@@ -79,6 +79,7 @@ export default class UserRepositoryMySQL implements UserRepository {
           : null,
         cedulaProfesional: user.getCedulaProfesional(),
         telefono: user.getTelefono(),
+        domicilio: user.getDomicilio(),
         permisosPrescripcion: user.getPermisosPrescripcion(),
         declaracionTerminos: user.getDeclaracionTerminos(),
       });
@@ -133,6 +134,7 @@ export default class UserRepositoryMySQL implements UserRepository {
         : null,
       cedulaProfesional: user.getCedulaProfesional(),
       telefono: user.getTelefono(),
+      domicilio: user.getDomicilio(),
       permisosPrescripcion: user.getPermisosPrescripcion(),
       declaracionTerminos: user.getDeclaracionTerminos(),
     };

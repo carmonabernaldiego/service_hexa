@@ -85,6 +85,9 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 20, nullable: true })
   telefono?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  domicilio?: string;
+
   @Column({ type: 'json', nullable: true, name: 'permisos_prescripcion' })
   permisosPrescripcion?: any;
 

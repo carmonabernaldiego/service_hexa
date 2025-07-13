@@ -83,6 +83,10 @@ export default class UserCommand {
   public telefono?: string;
 
   @IsOptional()
+  @IsString()
+  public domicilio?: string;
+
+  @IsOptional()
   @IsObject()
   @Transform(({ value }) => {
     if (typeof value === 'string') {

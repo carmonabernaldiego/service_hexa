@@ -77,6 +77,23 @@ export class NotificationService {
     await this.sendNotification(payload);
   }
 
+  async sendPasswordResetNotification(
+    email: string,
+    nombre: string,
+    code: string,
+  ): Promise<void> {
+    const payload: NotificationPayload = {
+      type: 'custom-notification',
+      email,
+      subject: 'Restablecimiento de contraseña',
+      message: `Hola ${nombre}, tu código de verificación es: <b style="color: red;">${code}</b>. Por favor, úsalo para restablecer tu contraseña.`,
+      preHeader: 'Código de verificación',
+      footerText: 'Este es un correo automático. No respondas.',
+    };
+
+    await this.sendNotification(payload);
+  }
+
   async sendCustomNotification(
     email: string,
     subject: string,

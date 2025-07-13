@@ -30,6 +30,13 @@ export default class UserRepositoryMySQL implements UserRepository {
     return UserMapper.toDomain(user);
   }
 
+  async findById(id: string): Promise<Optional<User>> {
+    const user = await this.userRepository.findOne({
+      where: { id, active: true },
+    });
+    return UserMapper.toDomain(user);
+  }
+
   public async findByEmail(email: string): Promise<Optional<User>> {
     const user = await this.userRepository.findOne({
       where: { email, active: true },
@@ -73,11 +80,13 @@ export default class UserRepositoryMySQL implements UserRepository {
         active: user['active'],
         passwordResetCode: user['passwordResetCode'],
         createAt: user['createAt'],
-        // Nuevos campos
         rfc: user.getRfc(),
-        fechaNacimiento: user.getFechaNacimiento(),
+        fechaNacimiento: user.getFechaNacimiento()
+          ? new Date(user.getFechaNacimiento())
+          : null,
         cedulaProfesional: user.getCedulaProfesional(),
         telefono: user.getTelefono(),
+        domicilio: user.getDomicilio(),
         permisosPrescripcion: user.getPermisosPrescripcion(),
         declaracionTerminos: user.getDeclaracionTerminos(),
       });
@@ -89,7 +98,6 @@ export default class UserRepositoryMySQL implements UserRepository {
         throw error;
       }
 
-      // Manejar errores de duplicados de MySQL
       if (error.code === 'ER_DUP_ENTRY') {
         if (error.message.includes('curp')) {
           throw new DuplicatedUserException(
@@ -127,11 +135,13 @@ export default class UserRepositoryMySQL implements UserRepository {
       role: user['role'],
       active: user['active'],
       passwordResetCode: user['passwordResetCode'],
-      // Nuevos campos
       rfc: user.getRfc(),
-      fechaNacimiento: user.getFechaNacimiento(),
+      fechaNacimiento: user.getFechaNacimiento()
+        ? new Date(user.getFechaNacimiento())
+        : null,
       cedulaProfesional: user.getCedulaProfesional(),
       telefono: user.getTelefono(),
+      domicilio: user.getDomicilio(),
       permisosPrescripcion: user.getPermisosPrescripcion(),
       declaracionTerminos: user.getDeclaracionTerminos(),
     };
@@ -154,7 +164,6 @@ export default class UserRepositoryMySQL implements UserRepository {
       return Optional.empty<User>();
     }
 
-    // Soft delete - solo cambiar active a false
     await this.userRepository.update({ curp }, { active: false });
 
     const deletedUser = await this.userRepository.findOne({

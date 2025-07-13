@@ -22,13 +22,13 @@ export default class UserMapper {
       entity.role,
       entity.active,
       entity.passwordResetCode,
-      // Nuevos campos
       entity.rfc,
       entity.fechaNacimiento
-        ? entity.fechaNacimiento.toISOString().substring(0, 10)
+        ? new Date(entity.fechaNacimiento).toISOString().substring(0, 10)
         : undefined,
       entity.cedulaProfesional,
       entity.telefono,
+      entity.domicilio,
       entity.permisosPrescripcion,
       entity.declaracionTerminos,
     );

@@ -58,14 +58,20 @@ export default class UserCommand {
   @IsString()
   public passwordResetCode?: string;
 
-  // NUEVOS CAMPOS OPCIONALES
-
   @IsOptional()
   @IsString()
   public rfc?: string;
 
   @IsOptional()
-  @IsDateString() // formato ISO desde el frontend, ej. "1995-01-30"
+  @IsDateString()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    try {
+      return new Date(value).toISOString().substring(0, 10);
+    } catch {
+      return undefined;
+    }
+  })
   public fechaNacimiento?: string;
 
   @IsOptional()
@@ -75,6 +81,10 @@ export default class UserCommand {
   @IsOptional()
   @IsString()
   public telefono?: string;
+
+  @IsOptional()
+  @IsString()
+  public domicilio?: string;
 
   @IsOptional()
   @IsObject()

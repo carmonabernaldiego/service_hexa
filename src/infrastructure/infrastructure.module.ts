@@ -6,6 +6,8 @@ import { ApplicationModule } from '../application/application.module';
 import { UserEntity } from './adapters/respository/users/entity/user.entity';
 import UserController from './controllers/user.controller';
 import AuthController from './controllers/auth.controller';
+import TwoFactorAuthController from './controllers/two-factor-auth.controller';
+import PasswordResetController from './controllers/password-reset.controller';
 import { StorageService } from './providers/storage.service';
 import { AuthModule } from './auth/auth.module';
 
@@ -36,7 +38,12 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forFeature([UserEntity]),
   ],
-  controllers: [UserController, AuthController],
+  controllers: [
+    UserController,
+    AuthController,
+    TwoFactorAuthController,
+    PasswordResetController,
+  ],
   providers: [StorageService],
   exports: [StorageService],
 })

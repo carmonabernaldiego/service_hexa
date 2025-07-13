@@ -21,6 +21,7 @@ export default class User {
   private fechaNacimiento?: string;
   private cedulaProfesional?: string;
   private telefono?: string;
+  private domicilio?: string;
   private permisosPrescripcion?: any;
   private declaracionTerminos?: any;
 
@@ -42,6 +43,7 @@ export default class User {
     fechaNacimiento?: string,
     cedulaProfesional?: string,
     telefono?: string,
+    domicilio?: string,
     permisosPrescripcion?: any,
     declaracionTerminos?: any,
   ) {
@@ -65,6 +67,7 @@ export default class User {
     this.fechaNacimiento = fechaNacimiento;
     this.cedulaProfesional = cedulaProfesional;
     this.telefono = telefono;
+    this.domicilio = domicilio;
     this.permisosPrescripcion = permisosPrescripcion;
     this.declaracionTerminos = declaracionTerminos;
 
@@ -222,6 +225,9 @@ export default class User {
   }
   public getTelefono(): string | undefined {
     return this.telefono;
+  }
+  public getDomicilio(): string | undefined {
+    return this.domicilio;
   }
   public getPermisosPrescripcion(): any {
     return this.permisosPrescripcion;

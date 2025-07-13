@@ -14,4 +14,7 @@ export const configVar = () => ({
   // JWT configuration
   JWT_SECRET: process.env.JWT_SECRET ?? 'secret-key',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '1h',
+
+  // Two-Factor Authentication configuration
+  TWO_FACTOR_AUTH_APP_NAME: process.env.TWO_FACTOR_AUTH_APP_NAME ?? 'RxCheck',
 });

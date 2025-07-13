@@ -27,6 +27,7 @@ export default class UserFactory {
       userCommand.fechaNacimiento,
       userCommand.cedulaProfesional,
       userCommand.telefono,
+      userCommand.domicilio,
       userCommand.permisosPrescripcion,
       userCommand.declaracionTerminos,
     );

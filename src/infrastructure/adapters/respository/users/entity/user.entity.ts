@@ -66,4 +66,28 @@ export class UserEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  // ---- CAMPOS NUEVOS OPCIONALES ----
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  rfc?: string;
+
+  @Column({ type: 'date', nullable: true, name: 'fecha_nacimiento' })
+  fechaNacimiento?: Date;
+
+  @Column({
+    type: 'varchar',
+    length: 30,
+    nullable: true,
+    name: 'cedula_profesional',
+  })
+  cedulaProfesional?: string;
+
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  telefono?: string;
+
+  @Column({ type: 'json', nullable: true, name: 'permisos_prescripcion' })
+  permisosPrescripcion?: any;
+
+  @Column({ type: 'json', nullable: true, name: 'declaracion_terminos' })
+  declaracionTerminos?: any;
 }

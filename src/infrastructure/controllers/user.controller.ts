@@ -47,7 +47,16 @@ export default class UserController {
       } else {
         cmd.imagen = null;
       }
-      const result = await this.createUser.handler(cmd);
+      const optionalUser = await this.createUser.handler(cmd);
+      const result = optionalUser.orElse(undefined);
+
+      // Obtener imagen prefirmada
+      if (result && result.getImagen()) {
+        result.setImagen(
+          await this.storageService.getSignedUrl(result.getImagen()),
+        );
+      }
+
       return res.status(HttpStatus.CREATED).json(result);
     } catch (error) {
       console.error('Error creating user:', error);
@@ -71,7 +80,16 @@ export default class UserController {
       if (file) {
         cmd.imagen = await this.storageService.uploadFile(file);
       }
-      const result = await this.updateUser.handler(curp, cmd);
+      const optionalUser = await this.updateUser.handler(curp, cmd);
+      const result = optionalUser.orElse(undefined);
+
+      // Obtener imagen prefirmada
+      if (result && result.getImagen()) {
+        result.setImagen(
+          await this.storageService.getSignedUrl(result.getImagen()),
+        );
+      }
+
       return res.status(HttpStatus.OK).json(result);
     } catch (error) {
       console.error('Error updating user:', error);

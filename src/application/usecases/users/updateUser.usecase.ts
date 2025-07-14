@@ -18,13 +18,27 @@ export default class UpdateUserUseCase {
     curp: string,
     userCommand: UserCommand,
   ): Promise<Optional<User>> {
+    const existingUserOpt = await this.userRepository.findByCurp(curp);
+
+    if (!existingUserOpt.isPresent()) {
+      return Optional.empty<User>();
+    }
+
+    const existingUser = existingUserOpt.get();
+
+    // Si no se envió isTwoFactorEnable, mantenemos el valor actual
+    if (userCommand.isTwoFactorEnable === undefined) {
+      userCommand.isTwoFactorEnable = existingUser['isTwoFactorEnable'];
+    }
+
+    // Similarmente puedes hacer esto para otros campos si deseas conservar valores no enviados
+
     const user = await this.userFactory.createUser(userCommand);
     const updatedUser = await this.userRepository.update(curp, user);
 
     if (updatedUser.isPresent()) {
       const u = updatedUser.get();
 
-      // Enviar notificación de usuario actualizado
       try {
         await this.notificationService.sendUserUpdatedNotification(
           u.getEmail(),
@@ -32,7 +46,6 @@ export default class UpdateUserUseCase {
         );
       } catch (error) {
         console.error('Error sending notification:', error);
-        // No falla la actualización si falla la notificación
       }
     }
 

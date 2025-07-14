@@ -10,14 +10,16 @@ import {
   Req,
   BadRequestException,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import LoginCommand from '../../application/commands/login.command';
 import LoginUseCase from '../../application/usecases/auth/login.usecase';
 import { TwoFactorAuthProvider } from '../../domain/ports/two-factor-auth.provider';
-import { Inject } from '@nestjs/common';
 import { TempTokenGuard } from '../auth/temp-token.guard';
+import { UserRepository } from '../../domain/ports/user.repository';
+import { StorageService } from '../providers/storage.service';
 
 @Controller('auth')
 export default class AuthController {
@@ -26,6 +28,9 @@ export default class AuthController {
     private readonly jwtService: JwtService,
     @Inject('TwoFactorAuthProvider')
     private readonly twoFactorAuth: TwoFactorAuthProvider,
+    @Inject('UserRepository')
+    private readonly userRepository: UserRepository,
+    private readonly storageService: StorageService,
   ) {}
 
   @Post('login')
@@ -45,18 +50,27 @@ export default class AuthController {
 
       const loginResponse = result.get();
 
-      // Respuesta diferenciada para 2FA
-      if (loginResponse.requires2fa) {
-        return res.status(HttpStatus.OK).json({
-          message: 'Se requiere autenticación de dos factores',
-          data: loginResponse,
-        });
+      // Obtener imagen firmada si existe
+      let imagenUrl: string | null = null;
+      if (loginResponse.user?.imagen) {
+        imagenUrl = await this.storageService.getSignedUrl(
+          loginResponse.user.imagen,
+        );
       }
 
-      // Respuesta para login completo
+      const responseWithImagen = {
+        ...loginResponse,
+        user: {
+          ...loginResponse.user,
+          imagen: imagenUrl ?? null,
+        },
+      };
+
       return res.status(HttpStatus.OK).json({
-        message: 'Login exitoso',
-        data: loginResponse,
+        message: loginResponse.requires2fa
+          ? 'Se requiere autenticación de dos factores'
+          : 'Login exitoso',
+        data: responseWithImagen,
       });
     } catch (error) {
       console.error('Error during login:', error);
@@ -68,7 +82,7 @@ export default class AuthController {
   }
 
   @Post('complete-2fa')
-  @UseGuards(TempTokenGuard) // <-- Usa el nuevo guard
+  @UseGuards(TempTokenGuard)
   async complete2FA(
     @Req() req: any,
     @Body() body: { code: string },
@@ -85,14 +99,6 @@ export default class AuthController {
 
       const userId = req.user.userId;
 
-      if (!userId) {
-        throw new BadRequestException(
-          'ID de usuario no encontrado en el token',
-        );
-      }
-
-      console.error(req.user);
-      // Verificar que el token es temporal (requires2fa)
       if (!req.user.requires2fa) {
         throw new BadRequestException('Token inválido para completar 2FA');
       }
@@ -103,7 +109,14 @@ export default class AuthController {
         throw new UnauthorizedException('Código de autenticación inválido');
       }
 
-      // Generar token final
+      const userOptional = await this.userRepository.findById(userId);
+      const user = userOptional.orElse(undefined);
+
+      let imagenUrl: string | undefined;
+      if (user?.getImagen()) {
+        imagenUrl = await this.storageService.getSignedUrl(user.getImagen());
+      }
+
       const payload = {
         sub: userId,
         userId: userId,
@@ -125,6 +138,7 @@ export default class AuthController {
             role: req.user.role,
             curp: req.user.curp,
             isTwoFactorEnable: true,
+            imagen: imagenUrl ?? null,
           },
         },
       });
@@ -151,7 +165,6 @@ export default class AuthController {
   @Post('validate')
   async validateToken(@Body('token') token: string, @Res() res: Response) {
     try {
-      // Verifica y decodifica el JWT
       const payload = this.jwtService.verify<{ sub: string; role: string }>(
         token,
       );

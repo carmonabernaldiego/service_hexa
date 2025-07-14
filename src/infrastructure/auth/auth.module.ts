@@ -7,6 +7,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { ApplicationModule } from '../../application/application.module';
 import AuthController from '../controllers/auth.controller';
 import { LOGIN_USECASES } from '../../application/usecases/auth';
+import { StorageService } from '../providers/storage.service';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { LOGIN_USECASES } from '../../application/usecases/auth';
     }),
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, ...LOGIN_USECASES],
+  providers: [JwtStrategy, StorageService, ...LOGIN_USECASES],
   exports: [JwtModule, ...LOGIN_USECASES],
 })
 export class AuthModule {}

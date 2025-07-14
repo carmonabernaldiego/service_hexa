@@ -10,33 +10,39 @@ import {
 } from 'class-validator';
 
 export default class UserCommand {
+  @IsOptional()
   @IsString()
-  @Transform(({ value }) => value.trim())
-  public nombre!: string;
+  @Transform(({ value }) => value?.trim())
+  public nombre?: string;
 
+  @IsOptional()
   @IsString()
-  @Transform(({ value }) => value.trim())
-  public apellidoPaterno!: string;
+  @Transform(({ value }) => value?.trim())
+  public apellidoPaterno?: string;
 
+  @IsOptional()
   @IsString()
-  @Transform(({ value }) => value.trim())
-  public apellidoMaterno!: string;
+  @Transform(({ value }) => value?.trim())
+  public apellidoMaterno?: string;
 
+  @IsOptional()
   @IsString()
-  @Transform(({ value }) => value.trim().toUpperCase())
-  public curp!: string;
+  @Transform(({ value }) => value?.trim().toUpperCase())
+  public curp?: string;
 
   @IsOptional()
   @IsString()
   public imagen?: string;
 
+  @IsOptional()
   @IsEmail()
-  @Transform(({ value }) => value.trim().toLowerCase())
-  public email!: string;
+  @Transform(({ value }) => value?.trim().toLowerCase())
+  public email?: string;
 
+  @IsOptional()
   @IsString()
-  @Transform(({ value }) => value.trim())
-  public password!: string;
+  @Transform(({ value }) => value?.trim())
+  public password?: string;
 
   @IsOptional()
   @IsString()

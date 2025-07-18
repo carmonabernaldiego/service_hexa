@@ -65,6 +65,7 @@ export default class PasswordResetController {
   ) {
     try {
       if (!body?.email || !body?.code || !body?.newPassword) {
+        console.log(body);
         throw new BadRequestException(
           'Todos los campos son requeridos (email, code, newPassword)',
         );

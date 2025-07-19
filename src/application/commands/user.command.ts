@@ -13,22 +13,23 @@ import {
 
 export default class UserCommand {
   /* ---------- Nombre ---------- */
-  @ValidateIf((o) => o.role !== 'farmacia')
+  @ValidateIf((o) => o.role !== 'farmacia') // requerido para todos excepto farmacia
   @IsString()
   @Transform(({ value }) => value?.trim())
   public nombre!: string;
 
   /* ---------- Apellidos ---------- */
+  @IsOptional() // ← ahora opcional
+  @ValidateIf((o) => o.role !== 'farmacia') // si NO es farmacia y viene ⇒ string
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  public apellidoPaterno?: string; // ← ‘?’ porque puede faltar
+
+  @IsOptional()
   @ValidateIf((o) => o.role !== 'farmacia')
   @IsString()
   @Transform(({ value }) => value?.trim())
-  public apellidoPaterno!: string;
-
-  @ValidateIf((o) => o.role !== 'farmacia')
-  @IsString()
-  @Transform(({ value }) => value?.trim())
-  public apellidoMaterno!: string;
-
+  public apellidoMaterno?: string;
   /* ---------- CURP / RFC ---------- */
   @IsString()
   @Transform(({ value }) => value.trim().toUpperCase())

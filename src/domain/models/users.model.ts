@@ -106,8 +106,16 @@ export default class User {
   }
 
   private validateNames(): void {
-    if (!this.nombre || !this.apellidoPaterno || !this.apellidoMaterno) {
-      throw new UserDomainException('Nombre y apellidos son obligatorios');
+    if (!this.nombre) {
+      throw new UserDomainException('El nombre es obligatorio');
+    }
+    if (this.role !== 'farmacia') {
+      // ← sólo pacientes/médicos/admin
+      if (!this.apellidoPaterno || !this.apellidoMaterno) {
+        throw new UserDomainException(
+          'Apellidos paterno y materno son obligatorios',
+        );
+      }
     }
   }
 

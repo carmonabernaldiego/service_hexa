@@ -22,8 +22,8 @@ import { TempTokenGuard } from '../auth/temp-token.guard';
 import { UserRepository } from '../../domain/ports/user.repository';
 import { StorageService } from '../providers/storage.service';
 import UserCommand from 'src/application/commands/user.command';
-import { FileInterceptor } from '@nestjs/platform-express'; // 🔥 NEW
-import { UploadedFile } from '@nestjs/common'; // 🔥 NEW
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadedFile } from '@nestjs/common';
 import RegisterUseCase from '../../application/usecases/auth/register.usecase';
 
 @Controller('auth')
@@ -41,9 +41,9 @@ export default class AuthController {
 
   /* --------- REGISTRO --------- */
   @Post('register')
-  @UseInterceptors(FileInterceptor('imagen')) // 🔥 NEW
+  @UseInterceptors(FileInterceptor('imagen'))
   async register(
-    @UploadedFile() file: Express.Multer.File, // 🔥 NEW
+    @UploadedFile() file: Express.Multer.File,
     @Body(new ValidationPipe({ transform: true, whitelist: true }))
     cmd: UserCommand,
     @Res() res: Response,

@@ -6,6 +6,7 @@ import { UserRepository } from '../../../domain/ports/user.repository';
 import UserCommand from '../../commands/user.command';
 import UserFactory from '../../factory/user.factory';
 import { NotificationService } from '../../../infrastructure/providers/notification.service';
+import UserDomainException from 'src/domain/exceptions/user-domain.exception';
 
 @Injectable()
 export default class CreateUserUseCase {
@@ -16,6 +17,15 @@ export default class CreateUserUseCase {
   ) {}
 
   public async handler(userCommand: UserCommand): Promise<Optional<User>> {
+    if (userCommand.role === 'farmacia') {
+      if (!userCommand.rfc) {
+        throw new UserDomainException('El RFC es obligatorio para farmacias');
+      }
+      userCommand.apellidoPaterno ??= '';
+      userCommand.apellidoMaterno ??= '';
+      userCommand.curp = userCommand.rfc;
+    }
+
     const user = await this.userFactory.createUser(userCommand);
     const createdUser = await this.userRepository.create(user);
 

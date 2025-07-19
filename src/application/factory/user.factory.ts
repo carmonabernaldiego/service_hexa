@@ -6,7 +6,11 @@ import UserCommand from '../commands/user.command';
 @Injectable()
 export default class UserFactory {
   public async createUser(userCommand: UserCommand): Promise<User> {
-    const hashedPassword = await bcrypt.hash(userCommand.password, 10);
+    const needsHash =
+      !!userCommand.password && !userCommand.password.startsWith('$2');
+    const hashedPassword = needsHash
+      ? await bcrypt.hash(userCommand.password, 10)
+      : userCommand.password ?? '';
 
     return new User(
       '',

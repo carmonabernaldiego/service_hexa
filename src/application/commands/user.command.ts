@@ -7,34 +7,44 @@ import {
   IsEnum,
   IsDateString,
   IsObject,
+  ValidateIf,
+  Length,
 } from 'class-validator';
 
 export default class UserCommand {
-  @IsOptional()
+  /* ---------- Nombre ---------- */
+  @ValidateIf((o) => o.role !== 'farmacia')
   @IsString()
   @Transform(({ value }) => value?.trim())
-  public nombre?: string;
+  public nombre!: string;
 
-  @IsOptional()
+  /* ---------- Apellidos ---------- */
+  @ValidateIf((o) => o.role !== 'farmacia')
   @IsString()
   @Transform(({ value }) => value?.trim())
-  public apellidoPaterno?: string;
+  public apellidoPaterno!: string;
 
-  @IsOptional()
+  @ValidateIf((o) => o.role !== 'farmacia')
   @IsString()
   @Transform(({ value }) => value?.trim())
-  public apellidoMaterno?: string;
+  public apellidoMaterno!: string;
 
-  @IsOptional()
+  /* ---------- CURP / RFC ---------- */
   @IsString()
-  @Transform(({ value }) => value?.trim().toUpperCase())
-  public curp?: string;
+  @Transform(({ value }) => value.trim().toUpperCase())
+  public curp!: string; // Para farmacia se enviará el RFC aquí
 
+  @IsOptional() // Solo obligatorio para farmacia
+  @Length(12, 13)
+  @IsString()
+  public rfc?: string;
+
+  /* ---------- Imagen ---------- */
   @IsOptional()
   @IsString()
   public imagen?: string;
 
-  @IsOptional()
+  /* ---------- Credenciales ---------- */
   @IsEmail()
   @Transform(({ value }) => value?.trim().toLowerCase())
   public email?: string;
@@ -44,6 +54,7 @@ export default class UserCommand {
   @Transform(({ value }) => value?.trim())
   public password?: string;
 
+  /* ---------- 2FA ---------- */
   @IsOptional()
   @IsString()
   public twoFactorAuthSecret?: string;
@@ -52,10 +63,12 @@ export default class UserCommand {
   @IsBoolean()
   public isTwoFactorEnable?: boolean;
 
+  /* ---------- Rol ---------- */
   @IsOptional()
   @IsEnum(['paciente', 'admin', 'medico', 'farmacia'] as const)
   public role?: string;
 
+  /* ---------- Otros ---------- */
   @IsOptional()
   @IsBoolean()
   public active?: boolean;
@@ -63,10 +76,6 @@ export default class UserCommand {
   @IsOptional()
   @IsString()
   public passwordResetCode?: string;
-
-  @IsOptional()
-  @IsString()
-  public rfc?: string;
 
   @IsOptional()
   @IsDateString()
@@ -94,29 +103,24 @@ export default class UserCommand {
 
   @IsOptional()
   @IsObject()
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      try {
-        return JSON.parse(value);
-      } catch {
-        return undefined;
-      }
-    }
-    return value;
-  })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? safeJSON(value) : value,
+  )
   public permisosPrescripcion?: any;
 
   @IsOptional()
   @IsObject()
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      try {
-        return JSON.parse(value);
-      } catch {
-        return undefined;
-      }
-    }
-    return value;
-  })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? safeJSON(value) : value,
+  )
   public declaracionTerminos?: any;
+}
+
+/* ---------- Helper ---------- */
+function safeJSON(str: string) {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return undefined;
+  }
 }

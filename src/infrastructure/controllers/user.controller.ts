@@ -77,25 +77,23 @@ export default class UserController {
     @Res() res: Response,
   ) {
     try {
-      if (file) {
-        cmd.imagen = await this.storageService.uploadFile(file);
-      }
-      const optionalUser = await this.updateUser.handler(curp, cmd);
-      const result = optionalUser.orElse(undefined);
+      if (file) cmd.imagen = await this.storageService.uploadFile(file);
 
-      // Obtener imagen prefirmada
-      if (result && result.getImagen()) {
-        result.setImagen(
-          await this.storageService.getSignedUrl(result.getImagen()),
+      const optionalUser = await this.updateUser.handler(curp, cmd);
+      const user = optionalUser.orElse(undefined);
+
+      if (user?.getImagen()) {
+        user.setImagen(
+          await this.storageService.getSignedUrl(user.getImagen()),
         );
       }
 
-      return res.status(HttpStatus.OK).json(result);
+      return res.status(HttpStatus.OK).json(user);
     } catch (error) {
       console.error('Error updating user:', error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Error updating user',
-        error: error.message,
+        message: error.message,
+        statusCode: 500,
       });
     }
   }

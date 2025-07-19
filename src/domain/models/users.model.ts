@@ -78,7 +78,17 @@ export default class User {
     this.validateEmail();
     this.validatePassword();
     this.validateNames();
-    this.validateCurp();
+    this.role === 'farmacia' ? this.validateRfc() : this.validateCurp();
+  }
+
+  /* ---------- Valida RFC (farmacia) ---------- */
+  private validateRfc(): void {
+    const rfc = (this.rfc ?? this.curp).toUpperCase();
+    const regex =
+      /^([A-ZÑ&]{3,4})\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{3}$/;
+    if (!regex.test(rfc)) {
+      throw new UserDomainException('RFC con formato inválido');
+    }
   }
 
   private validateEmail(): void {

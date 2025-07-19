@@ -7,6 +7,7 @@ import {
   HttpStatus,
   ValidationPipe,
   UseGuards,
+  UseInterceptors,
   Req,
   BadRequestException,
   UnauthorizedException,
@@ -20,11 +21,16 @@ import { TwoFactorAuthProvider } from '../../domain/ports/two-factor-auth.provid
 import { TempTokenGuard } from '../auth/temp-token.guard';
 import { UserRepository } from '../../domain/ports/user.repository';
 import { StorageService } from '../providers/storage.service';
+import UserCommand from 'src/application/commands/user.command';
+import { FileInterceptor } from '@nestjs/platform-express'; // 🔥 NEW
+import { UploadedFile } from '@nestjs/common'; // 🔥 NEW
+import RegisterUseCase from '../../application/usecases/auth/register.usecase';
 
 @Controller('auth')
 export default class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
+    private readonly registerUseCase: RegisterUseCase,
     private readonly jwtService: JwtService,
     @Inject('TwoFactorAuthProvider')
     private readonly twoFactorAuth: TwoFactorAuthProvider,
@@ -32,6 +38,61 @@ export default class AuthController {
     private readonly userRepository: UserRepository,
     private readonly storageService: StorageService,
   ) {}
+
+  /* --------- REGISTRO --------- */
+  @Post('register')
+  @UseInterceptors(FileInterceptor('imagen')) // 🔥 NEW
+  async register(
+    @UploadedFile() file: Express.Multer.File, // 🔥 NEW
+    @Body(new ValidationPipe({ transform: true, whitelist: true }))
+    cmd: UserCommand,
+    @Res() res: Response,
+  ) {
+    try {
+      /* Subir imagen (si viene) */
+      if (file) {
+        cmd.imagen = await this.storageService.uploadFile(file);
+      }
+
+      const result = await this.registerUseCase.handler(cmd);
+
+      if (!result.isPresent()) {
+        return res.status(400).json({
+          message: 'No se pudo crear el usuario. Verifica los datos.',
+          statusCode: 400,
+        });
+      }
+
+      const user = result.get();
+      if (user.getImagen()) {
+        user.setImagen(
+          await this.storageService.getSignedUrl(user.getImagen()),
+        );
+      }
+
+      return res.status(HttpStatus.CREATED).json({
+        message: 'Registro exitoso',
+        data: user,
+      });
+    } catch (e) {
+      /* ------------ ERRORES DE NEGOCIO -------------- */
+      if (e.name === 'DuplicatedUserException')
+        return res.status(409).json({ message: e.message, statusCode: 409 });
+      if (e.name === 'UserDomainException')
+        return res.status(400).json({ message: e.message, statusCode: 400 });
+
+      /* ------------ VALIDACIÓN ---------------------- */
+      if (e.status === 400)
+        return res.status(400).json({ message: e.message, statusCode: 400 });
+
+      /* ------------ FALLO DESCONOCIDO --------------- */
+      console.error('Error en /auth/register:', e);
+      return res.status(500).json({
+        message: e.message || 'Error interno al registrar usuario',
+        statusCode: 500,
+      });
+    }
+  }
 
   @Post('login')
   async login(

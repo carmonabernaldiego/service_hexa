@@ -6,12 +6,14 @@ import { Configuration } from '../../config/env.enum';
 import { JwtStrategy } from './jwt.strategy';
 import { ApplicationModule } from '../../application/application.module';
 import AuthController from '../controllers/auth.controller';
-import { LOGIN_USECASES } from '../../application/usecases/auth';
+import { AUTH_USECASES } from '../../application/usecases/auth';
 import { StorageService } from '../providers/storage.service';
+import { RabbitMQModule } from '../providers/rabbitmq.module';
 
 @Module({
   imports: [
     ApplicationModule,
+    RabbitMQModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -25,7 +27,7 @@ import { StorageService } from '../providers/storage.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, StorageService, ...LOGIN_USECASES],
-  exports: [JwtModule, ...LOGIN_USECASES],
+  providers: [JwtStrategy, StorageService, ...AUTH_USECASES],
+  exports: [JwtModule, ...AUTH_USECASES],
 })
 export class AuthModule {}

@@ -5,6 +5,7 @@ import { UserRepository } from '../../../domain/ports/user.repository';
 import UserCommand from '../../commands/user.command';
 import UserFactory from '../../factory/user.factory';
 import { NotificationService } from '../../../infrastructure/providers/notification.service';
+import UserDomainException from 'src/domain/exceptions/user-domain.exception';
 
 @Injectable()
 export default class UpdateUserUseCase {
@@ -16,39 +17,45 @@ export default class UpdateUserUseCase {
 
   public async handler(
     curp: string,
-    userCommand: UserCommand,
+    cmd: UserCommand,
   ): Promise<Optional<User>> {
-    const existingUserOpt = await this.userRepository.findByCurp(curp);
+    /* ---------- usuario actual ---------- */
+    const existingOpt = await this.userRepository.findByCurp(curp);
+    if (!existingOpt.isPresent()) return Optional.empty<User>();
 
-    if (!existingUserOpt.isPresent()) {
-      return Optional.empty<User>();
+    const existing = existingOpt.get();
+
+    /* ---------- Conservar valores NO enviados ---------- */
+    cmd.role = cmd.role ?? existing['role'];
+    cmd.isTwoFactorEnable =
+      cmd.isTwoFactorEnable !== undefined
+        ? cmd.isTwoFactorEnable
+        : existing['isTwoFactorEnable'];
+
+    /* ---------- Reglas de FARMACIA ---------- */
+    if (cmd.role === 'farmacia') {
+      cmd.apellidoPaterno = cmd.apellidoPaterno ?? '';
+      cmd.apellidoMaterno = cmd.apellidoMaterno ?? '';
+      if (!cmd.rfc && !existing.getRfc())
+        throw new UserDomainException('El RFC es obligatorio para farmacias');
+      cmd.curp = (cmd.rfc ?? existing.getRfc()) as string;
     }
 
-    const existingUser = existingUserOpt.get();
+    /* ---------- Crear dominio modificado ---------- */
+    const user = await this.userFactory.createUser({ ...existing, ...cmd });
+    const updated = await this.userRepository.update(curp, user);
 
-    // Si no se envió isTwoFactorEnable, mantenemos el valor actual
-    if (userCommand.isTwoFactorEnable === undefined) {
-      userCommand.isTwoFactorEnable = existingUser['isTwoFactorEnable'];
-    }
-
-    // Similarmente puedes hacer esto para otros campos si deseas conservar valores no enviados
-
-    const user = await this.userFactory.createUser(userCommand);
-    const updatedUser = await this.userRepository.update(curp, user);
-
-    if (updatedUser.isPresent()) {
-      const u = updatedUser.get();
-
+    if (updated.isPresent()) {
+      const u = updated.get();
       try {
         await this.notificationService.sendUserUpdatedNotification(
           u.getEmail(),
           u.getNombre(),
         );
-      } catch (error) {
-        console.error('Error sending notification:', error);
+      } catch (err) {
+        console.error('Error sending notification:', err);
       }
     }
-
-    return updatedUser;
+    return updated;
   }
 }

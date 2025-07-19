@@ -1,3 +1,4 @@
 import LoginUseCase from './login.usecase';
+import RegisterUseCase from './register.usecase';
 
-export const LOGIN_USECASES = [LoginUseCase];
+export const AUTH_USECASES = [LoginUseCase, RegisterUseCase];

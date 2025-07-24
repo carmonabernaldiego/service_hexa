@@ -35,8 +35,9 @@ export default class UserCommand {
   @Transform(({ value }) => value.trim().toUpperCase())
   public curp!: string; // Para farmacia se enviará el RFC aquí
 
-  @IsOptional() // Solo obligatorio para farmacia
-  @Length(12, 13)
+  @IsOptional()
+  @ValidateIf((o) => o.role === 'farmacia' && o.rfc && o.rfc.trim() !== '')
+  @Length(12, 13, { message: 'El RFC debe tener entre 12 y 13 caracteres' })
   @IsString()
   public rfc?: string;
 

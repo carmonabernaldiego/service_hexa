@@ -78,7 +78,13 @@ export default class User {
     this.validateEmail();
     this.validatePassword();
     this.validateNames();
-    this.role === 'farmacia' ? this.validateRfc() : this.validateCurp();
+
+    if (this.role === 'farmacia') {
+      this.validateRfc();
+    } else if (this.curp !== (this.rfc ?? '')) {
+      // Si curp viene distinto al rfc, entonces sí valida como curp
+      this.validateCurp();
+    }
   }
 
   /* ---------- Valida RFC (farmacia) ---------- */
